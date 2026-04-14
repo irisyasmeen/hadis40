@@ -777,7 +777,7 @@ export default function App() {
               </div>
             </div>
           </motion.div>
-        </ AnimatePresence>
+        </AnimatePresence>
       </main>
 
       {/* Navigation Bar */}
