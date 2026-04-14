@@ -25,33 +25,50 @@ export default function App() {
   
   // Theme state
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') === 'dark' || 
-        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('theme');
+        if (saved) return saved === 'dark';
+        return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+      }
+    } catch (e) {
+      console.error('DarkMode init error:', e);
     }
     return false;
   });
 
   // Favorites state
   const [favorites, setFavorites] = useState<number[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('favorites');
-      return saved ? JSON.parse(saved) : [];
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('favorites');
+        return saved ? JSON.parse(saved) : [];
+      }
+    } catch (e) {
+      console.error('Favorites init error:', e);
     }
     return [];
   });
 
   useEffect(() => {
-    localStorage.setItem('favorites', JSON.stringify(favorites));
+    try {
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+    } catch (e) {
+      console.error('Favorites save error:', e);
+    }
   }, [favorites]);
 
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
+    try {
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
+    } catch (e) {
+      console.error('Theme effect error:', e);
     }
   }, [isDarkMode]);
   
@@ -62,16 +79,24 @@ export default function App() {
 
   // AI Insights state
   const [aiInsights, setAiInsights] = useState<Record<number, string>>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('ai_insights');
-      return saved ? JSON.parse(saved) : {};
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('ai_insights');
+        return saved ? JSON.parse(saved) : {};
+      }
+    } catch (e) {
+      console.error('AI Insights init error:', e);
     }
     return {};
   });
   const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('ai_insights', JSON.stringify(aiInsights));
+    try {
+      localStorage.setItem('ai_insights', JSON.stringify(aiInsights));
+    } catch (e) {
+      console.error('AI Insights save error:', e);
+    }
   }, [aiInsights]);
 
   const tabsRef = useRef<HTMLDivElement>(null);
